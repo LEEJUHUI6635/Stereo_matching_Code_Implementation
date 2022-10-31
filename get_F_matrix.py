@@ -11,24 +11,9 @@ img1 = cv2.resize(img1,(400,400))
 img2 = cv2.imread('./right_results/0000000000.png',0)
 img2 = cv2.resize(img2,(400,400))
 
-sift = cv2.SIFT_create()
 
-# SIFT로 keypoints와 descriptors 찾기
-kp1, des1 = sift.detectAndCompute(img1,None)
-kp2, des2 = sift.detectAndCompute(img2,None)
 
-# FLANN 파라미터
-FLANN_INDEX_KDTREE = 0
-index_params = dict(algorithm = FLANN_INDEX_KDTREE,
-                   tress = 5)
-search_params = dict(checks=50)
 
-flann = cv2.FlannBasedMatcher(index_params,search_params)
-matches = flann.knnMatch(des1,des2,k=2)
-
-good = []
-pts1 = []
-pts2 = []
 
 # ratio test
 for i,(m,n) in enumerate(matches):
@@ -41,7 +26,41 @@ pts1 = np.int32(pts1)
 pts2 = np.int32(pts2)
 F, mask = cv2.findFundamentalMat(pts1,pts2,cv2.FM_LMEDS)
 
-print(F)
+
+
+
+
+# sift = cv2.SIFT_create()
+
+# # SIFT로 keypoints와 descriptors 찾기
+# kp1, des1 = sift.detectAndCompute(img1,None)
+# kp2, des2 = sift.detectAndCompute(img2,None)
+
+# # FLANN 파라미터
+# FLANN_INDEX_KDTREE = 0
+# index_params = dict(algorithm = FLANN_INDEX_KDTREE,
+#                    tress = 5)
+# search_params = dict(checks=50)
+
+# flann = cv2.FlannBasedMatcher(index_params,search_params)
+# matches = flann.knnMatch(des1,des2,k=2)
+
+# good = []
+# pts1 = []
+# pts2 = []
+
+# # ratio test
+# for i,(m,n) in enumerate(matches):
+#     if m.distance < 0.8*n.distance:
+#         good.append(m)
+#         pts2.append(kp2[m.trainIdx].pt)
+#         pts1.append(kp1[m.queryIdx].pt)
+
+# pts1 = np.int32(pts1)
+# pts2 = np.int32(pts2)
+# F, mask = cv2.findFundamentalMat(pts1,pts2,cv2.FM_LMEDS)
+
+# print(F)
 
 
 # # inlier 포인트만 선택한다.
