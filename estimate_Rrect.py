@@ -1,2 +1,6 @@
-# Rectify -> epipole line이 서로 평행이 되게끔 만드는 rotation matrix를 구한다.
-# Homography ?
+import cv2 as cv
+
+def estimate_Rrect(src_pts, dst_pts, F, height, width):
+    _, H1, H2 = cv.stereoRectifyUncalibrated(src_pts, dst_pts, F, imgSize=(width, height))
+    
+    return H1, H2
