@@ -1,7 +1,7 @@
 import numpy as np
 import cv2 as cv
 
-def undistort_image(distorted_image, intrinsic_parameters, distortion_parameters, lr):
+def undistort_image(file_name, distorted_image, intrinsic_parameters, distortion_parameters, lr):
     height = distorted_image.shape[0]
     width = distorted_image.shape[1]
     clean_image = np.zeros_like(distorted_image)
@@ -36,6 +36,6 @@ def undistort_image(distorted_image, intrinsic_parameters, distortion_parameters
             clean_image[y, x] = distorted_image[y_pd, x_pd]
             
     if lr.lower() == 'left':
-        cv.imwrite('./left_results/0000000000.png', clean_image)
+        cv.imwrite('./left_results/{}'.format(file_name), clean_image)
     elif lr.lower() == 'right':
-        cv.imwrite('./right_results/0000000000.png', clean_image)
+        cv.imwrite('./right_results/{}'.format(file_name), clean_image)
