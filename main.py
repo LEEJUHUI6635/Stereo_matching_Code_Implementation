@@ -13,20 +13,20 @@ from rectify_image import rectify_image
 from get_disparity_map import get_disparity_map
 
 # 전체 이미지에 대해서
-left_image_folder_path = 'KITTI-Dataset/2011_09_26_drive_0048/unsync_unrect/image_00/data'
-right_image_folder_path = 'KITTI-Dataset/2011_09_26_drive_0048/unsync_unrect/image_01/data'
+left_image_folder_path = 'KITTI-Dataset/2011_09_26_drive_0048/unsync_unrect/image_02/data'
+right_image_folder_path = 'KITTI-Dataset/2011_09_26_drive_0048/unsync_unrect/image_03/data'
 
 distorted_list = sorted([file for file in os.listdir(left_image_folder_path)])
 
 # left intrinsic parameters
-left_intrinsic_parameters = {'fx': 9.842439e+02, 'cx': 6.900000e+02, 'fy': 9.808141e+02, 'cy': 2.331966e+02}
+left_intrinsic_parameters = {'fx': 9.597910e+02, 'cx': 6.960217e+02, 'fy': 9.569251e+02, 'cy': 2.241806e+02}
 # left distortion parameters
-left_distortion_parameters = {'k1': -3.728755e-01, 'k2': 2.037299e-01, 'p1': 2.219027e-03, 'p2': 1.383707e-03, 'k3': -7.233722e-02}
+left_distortion_parameters = {'k1': -3.691481e-01, 'k2': 1.968681e-01, 'p1': 1.353473e-03, 'p2': 5.677587e-04, 'k3': -6.770705e-02}
 
 # right intrinsic parameters
-right_intrinsic_parameters = {'fx': 9.895267e+02, 'cx': 7.020000e+02, 'fy': 9.878386e+02, 'cy': 2.455590e+02}
+right_intrinsic_parameters = {'fx': 9.037596e+02, 'cx': 6.957519e+02, 'fy': 9.019653e+02, 'cy': 2.242509e+02}
 # right distortion parameters
-right_distortion_parameters = {'k1': -3.644661e-01, 'k2': 1.790019e-01, 'p1': 1.148107e-03, 'p2': -6.298563e-04, 'k3': -5.314062e-02}
+right_distortion_parameters = {'k1': -3.639558e-01, 'k2': 1.788651e-01, 'p1': 6.029694e-04, 'p2': -3.922424e-04, 'k3': -5.382460e-02}
 
 # 폴더 만들기
 if not os.path.exists('left_results'):
@@ -48,21 +48,24 @@ for file_name in distorted_list:
     # right image에 대한 distortion 제거
     undistort_image(file_name, right_distorted_image, right_intrinsic_parameters, right_distortion_parameters, 'right')
 
-    # left image calibration
-    left_calibration_image = cv.imread('KITTI-Dataset/2011_09_26_drive_0048/calibration/image_00/data/0000000000.png')
+    # Calibration image에 대한 distortion 제거
+    left_calibration_image = cv.imread('KITTI-Dataset/2011_09_26_drive_0048/calibration/image_02/data/0000000000.png')
+    undistort_image('0000000000.png', left_calibration_image, left_intrinsic_parameters, left_distortion_parameters, 'calibration_left')
     intrinsic_parameters_L, distortion_parameters_L, rotation_vectors_L, translation_vectors_L = calibration(left_calibration_image)
-
-    # right image calibration
-    right_calibration_image = cv.imread('KITTI-Dataset/2011_09_26_drive_0048/calibration/image_01/data/0000000000.png')
+    
+    right_calibration_image = cv.imread('KITTI-Dataset/2011_09_26_drive_0048/calibration/image_03/data/0000000000.png')
+    undistort_image('0000000000.png', right_calibration_image, right_intrinsic_parameters, right_distortion_parameters, 'calibration_right')
     intrinsic_parameters_R, distortion_parameters_R, rotation_vectors_R, translation_vectors_R = calibration(right_calibration_image)
 
     # ORB feature matching
-    left_image = cv.imread(os.path.join('left_results', file_name), 0)
-    right_image = cv.imread(os.path.join('right_results', file_name), 0)
+    left_image = cv.imread(os.path.join('left_results', file_name))
+    right_image = cv.imread(os.path.join('right_results', file_name))
 
-    src_pts, dst_pts = feature_matching(left_image, right_image)
+    left_calib = cv.imread('calibration_left_0000000000.png', 0)
+    right_calib = cv.imread('calibration_right_0000000000.png', 0)
+    src_pts, dst_pts = feature_matching(left_calib, right_calib)
 
-    # Fundamental matrix 
+    # Fundamental matrix
     F, mask = get_F_matrix(src_pts, dst_pts)
 
     # Essential matrix

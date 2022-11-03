@@ -39,3 +39,7 @@ def undistort_image(file_name, distorted_image, intrinsic_parameters, distortion
         cv.imwrite('./left_results/{}'.format(file_name), clean_image)
     elif lr.lower() == 'right':
         cv.imwrite('./right_results/{}'.format(file_name), clean_image)
+    elif lr.lower() == 'calibration_left':
+        cv.imwrite('./calibration_left_{}'.format(file_name), clean_image)
+    elif lr.lower() == 'calibration_right':
+        cv.imwrite('./calibration_right_{}'.format(file_name), clean_image)
